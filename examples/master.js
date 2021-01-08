@@ -103,8 +103,8 @@ async function startMaster(localView, remoteView, formValues, onStatsReport, onR
         audio: formValues.sendAudio,
     };
 
-    // Get a stream from the webcam and display it in the local view. 
-    // If no video/audio needed, no need to request for the sources. 
+    // Get a stream from the webcam and display it in the local view.
+    // If no video/audio needed, no need to request for the sources.
     // Otherwise, the browser will throw an error saying that either video or audio has to be enabled.
     if (formValues.sendVideo || formValues.sendAudio) {
         try {
@@ -176,12 +176,12 @@ async function startMaster(localView, remoteView, formValues, onStatsReport, onR
 
         // Create an SDP answer to send back to the client
         console.log('[MASTER] Creating SDP answer for client: ' + remoteClientId);
-        await peerConnection.setLocalDescription(
-            await peerConnection.createAnswer({
-                offerToReceiveAudio: true,
-                offerToReceiveVideo: true,
-            }),
-        );
+
+        peerConnection.addTransceiver('audio');
+        peerConnection.addTransceiver('video');
+        const answer = await peerConnection.createAnswer();
+
+        await peerConnection.setLocalDescription(answer);
 
         // When trickle ICE is enabled, send the answer now and then send ICE candidates as they are generated. Otherwise wait on the ICE candidates.
         if (formValues.useTrickleICE) {

@@ -179,10 +179,10 @@ signalingClient.on('open', async () => {
     }
 
     // Create an SDP offer and send it to the master
-    const offer = await viewer.peerConnection.createOffer({
-        offerToReceiveAudio: true,
-        offerToReceiveVideo: true,
-    });
+    viewer.peerConnection.addTransceiver('audio');
+    viewer.peerConnection.addTransceiver('video');
+    const offer = await viewer.peerConnection.createOffer();
+
     await peerConnection.setLocalDescription(offer);
     signalingClient.sendSdpOffer(viewer.peerConnection.localDescription);
 });

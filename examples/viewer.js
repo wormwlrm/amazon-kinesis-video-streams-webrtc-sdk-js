@@ -111,7 +111,7 @@ async function startViewer(localView, remoteView, formValues, onStatsReport, onR
         console.log('[VIEWER] Connected to signaling service');
 
         // Get a stream from the webcam, add it to the peer connection, and display it in the local view.
-        // If no video/audio needed, no need to request for the sources. 
+        // If no video/audio needed, no need to request for the sources.
         // Otherwise, the browser will throw an error saying that either video or audio has to be enabled.
         if (formValues.sendVideo || formValues.sendAudio) {
             try {
@@ -126,12 +126,12 @@ async function startViewer(localView, remoteView, formValues, onStatsReport, onR
 
         // Create an SDP offer to send to the master
         console.log('[VIEWER] Creating SDP offer');
-        await viewer.peerConnection.setLocalDescription(
-            await viewer.peerConnection.createOffer({
-                offerToReceiveAudio: true,
-                offerToReceiveVideo: true,
-            }),
-        );
+
+        viewer.peerConnection.addTransceiver('audio');
+        viewer.peerConnection.addTransceiver('video');
+        const offer = await viewer.peerConnection.createOffer();
+
+        await viewer.peerConnection.setLocalDescription(offer);
 
         // When trickle ICE is enabled, send the offer now and then send ICE candidates as they are generated. Otherwise wait on the ICE candidates.
         if (formValues.useTrickleICE) {
